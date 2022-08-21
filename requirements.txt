@@ -2,3 +2,6 @@ numpy
 pandas
 plotly.express
 streamlit
+psycopg2-binary
+streamlit-aggrid
+influxdb_client

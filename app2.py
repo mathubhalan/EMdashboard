@@ -1,5 +1,11 @@
+from cgitb import reset
 import streamlit as st
 import psycopg2
+import pandas as pd
+from st_aggrid import AgGrid
+from ts import time_series as ts
+
+st.set_page_config(layout='wide', page_title="Dashboard - Flexibility")
 
 @st.experimental_singleton
 def init_connection():
@@ -20,13 +26,64 @@ ic_request = run_query("select count(*) from incoming_request;")
 for rc in ic_request:    
     ct1=rc[0]
 
-st.title("Dashboard")
-c=st.empty()
-with c.container():
-    kpi1,kpi2 = st.columns(2)
-    kpi1.metric(label="Assets", value=ct)
-    kpi2.metric(label="Incoming Request", value=ct1)
+event_rows = run_query("select count(*) from event_table;")
+for rc in event_rows:
+    ct2=rc[0]
 
+
+st.title("Flexibility Signals Board")
+#c=st.empty()
+with st.container():
+    kpi1,kpi2,kpi3 = st.columns(3)
+    kpi1.metric(label="Total Assets", value=ct)
+    kpi2.metric(label="Incoming Request", value=ct1)
+    kpi3.metric(label="Events", value=ct2 )
+with st.container():
+    col1,col2 = st.columns(2)
+    with col1:
+        st.header("EVENTS TRIGGERED - CLIENT PARTNERS")
+        res = run_query("select req_code, event_type, event_url, status from event_table;")
+        cols = ["Request Code", 'Event Type','Event Url','Status']
+        df = pd.DataFrame(data=res,columns=cols)
+        #df
+        AgGrid(df)
+    with col2:
+        st.header("DSO - INCOMING REQUESTS")
+        v="WPD"
+        query= f"select request_code, dso, zone_id, programme, status, received_time from incoming_request where dso='WPD'"
+        result = run_query(query=query)
+        cols1=["Request Code","DSO","ZONE", "PROGRAMME","STATUS","RECEIVED TIME"]
+        #result = run_query(f"select 'request_code', 'dso', 'zone_id', 'programme', 'status', 'received_time' from incoming_request where 'dso'='"{v}"';")
+        df_res=pd.DataFrame(data=result, columns=cols1)
+        AgGrid(df_res)
+        
+with st.container():
+    col21,col22 = st.columns(2)
+    with col21:
+        st.header("CLIENT PARTNER - METER READINGS")
+        ts_data = ts()
+        ds = ts_data.fetch_data()
+        AgGrid(ds)
+    
+    
+    
+
+
+
+
+# st.title("EMDashBoard")
+# with st.container():
+#     st.caption('This is a string that explains something above.')
+#     #c1, c2 =st.columns(2)
+#     row =run_query("select * from incoming_request;")
+#     st.table(row)
+#         for rc in ic_request:   
+#             print(rc,"***rc***") 
+#             ct1=rc[0]
+#             print(ct1)
+#     with c1: 
+        
+    
 
 # Print results.
 #for row in rows:
