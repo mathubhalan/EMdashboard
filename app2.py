@@ -13,7 +13,7 @@ def init_connection():
 
 conn = init_connection()
 
-@st.experimental_memo(ttl=600)
+@st.experimental_memo(ttl=150)
 def run_query(query):
     with conn.cursor() as cur:
         cur.execute(query)
@@ -41,13 +41,6 @@ with st.container():
 with st.container():
     col1,col2 = st.columns(2)
     with col1:
-        st.header("EVENTS TRIGGERED - CLIENT PARTNERS")
-        res = run_query("select req_code, event_type, event_url, status from event_table;")
-        cols = ["Request Code", 'Event Type','Event Url','Status']
-        df = pd.DataFrame(data=res,columns=cols)
-        #df
-        AgGrid(df)
-    with col2:
         st.header("DSO - INCOMING REQUESTS")
         v="WPD"
         query= f"select request_code, dso, zone_id, programme, status, received_time from incoming_request where dso='WPD'"
@@ -56,6 +49,14 @@ with st.container():
         #result = run_query(f"select 'request_code', 'dso', 'zone_id', 'programme', 'status', 'received_time' from incoming_request where 'dso'='"{v}"';")
         df_res=pd.DataFrame(data=result, columns=cols1)
         AgGrid(df_res)
+        
+    with col2:
+        st.header("EVENTS TRIGGERED - CLIENT PARTNERS")
+        res = run_query("select req_code, event_type, event_url, status from event_table;")
+        cols = ["Request Code", 'Event Type','Event Url','Status']
+        df = pd.DataFrame(data=res,columns=cols)
+        #df
+        AgGrid(df)
         
 with st.container():
     col21,col22 = st.columns(2)

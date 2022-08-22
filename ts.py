@@ -11,7 +11,7 @@ class time_series():
   def fetch_data(self):
     query='''
           from(bucket: "timeseries")
-            |> range(start: -3d)
+            |> range(start: -1d)
             |> filter(fn: (r) => r["_measurement"] == "meter_reading" )
             |> filter(fn: (r) => r["_field"] == "power")
             |> keep(columns: ["_time","_field","_value","asset_id"])
