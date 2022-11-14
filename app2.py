@@ -65,27 +65,11 @@ with st.container():
         ts_data = ts()
         ds = ts_data.fetch_data()
         AgGrid(ds)
+    with col22:
+        st.header("DSO - POST METER READINGS")
+        result_q = run_query("select transaction_code, request_code, meter_reading, start_time from transaction_details")
+        cols3=["Transaction Code", "Request Code", "Meter Reading", "Time" ]
+        df1_r= pd.DataFrame(data=result_q,columns=cols3)
+        AgGrid(df1_r)
     
     
-    
-
-
-
-
-# st.title("EMDashBoard")
-# with st.container():
-#     st.caption('This is a string that explains something above.')
-#     #c1, c2 =st.columns(2)
-#     row =run_query("select * from incoming_request;")
-#     st.table(row)
-#         for rc in ic_request:   
-#             print(rc,"***rc***") 
-#             ct1=rc[0]
-#             print(ct1)
-#     with c1: 
-        
-    
-
-# Print results.
-#for row in rows:
- #   st.write(f"{row[0]} has a :{row[1]}:")
